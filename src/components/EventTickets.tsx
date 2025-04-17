@@ -111,7 +111,11 @@ export default function EventTickets() {
   }
 
   const sendTicket = (ticket: Ticket) => {
-    console.log(ticket);
+    const { phone, id } = ticket;
+    const whatsappUrl = 'https://api.whatsapp.com';
+    const text = `Hola%2C%20este%20es%20tu%20boleto%20digital%20el%20cual%20debes%20presentar%20el%20d%C3%ADa%20del%20evento%20en%20la%20entrada%3A%20https%3A%2F%2Freact-ticket-manager.vercel.app%2Fticket%2F${id}`;
+    const url = `${whatsappUrl}/send?phone=502${phone}&text=${text}`;
+    window.open(url, '_blank');
   }
 
   if (loading) {
