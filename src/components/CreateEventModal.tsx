@@ -11,6 +11,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
+import { Dayjs } from 'dayjs';
 import supabase from '../lib/supabase';
 import { Event } from '../types';
 
@@ -105,8 +106,8 @@ export default function CreateEventModal({
 
         <DateTimePicker
           label="Fecha y Hora del Evento"
-          value={formData.date}
-          onChange={(newValue) => setFormData({...formData, date: newValue})}
+          value={formData.date as Dayjs | null}
+          onChange={(newValue) => setFormData({...formData, date: newValue as Date | null})}
           slotProps={{
             textField: {
               fullWidth: true,
