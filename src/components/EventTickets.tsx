@@ -17,10 +17,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Fab
 } from '@mui/material';
-import { Add, ArrowBack, Delete, Visibility } from '@mui/icons-material';
+import { Add, ArrowBack, Delete, Visibility, Send } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import supabase from '../lib/supabase';
 
@@ -111,6 +110,10 @@ export default function EventTickets() {
    navigate(`/ticket/${ticketId}`);
   }
 
+  const sendTicket = (ticket: Ticket) => {
+    console.log(ticket);
+  }
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -130,7 +133,7 @@ export default function EventTickets() {
       </Button>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">Gestión de Tickets</Typography>
+        <Typography variant="h5">Gestión de Tickets ({tickets.length})</Typography>
       </Box>
 
       {error && (
@@ -167,20 +170,30 @@ export default function EventTickets() {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <IconButton
+                  <Button
                     size="small"
                     color="error"
                     onClick={() => handleDeleteTicket(ticket.id)}
+                    startIcon={<Delete fontSize="small" />}
                   >
-                    <Delete fontSize="small" />
-                  </IconButton>
-                  <IconButton
+                    Eliminar
+                  </Button>
+                  <Button
                     size="small"
                     color="success"
                     onClick={() => checkTicket(ticket.id)}
+                    startIcon={<Visibility fontSize="small" />}
                   >
-                    <Visibility fontSize="small" />
-                  </IconButton>
+                    Ver
+                  </Button>
+                  <Button
+                    size="small"
+                    color="info"
+                    onClick={() => sendTicket(ticket)}
+                    startIcon={<Send fontSize="small" />}
+                  >
+                    Enviar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
