@@ -32,7 +32,7 @@ A modern web application for managing event tickets, built with React, TypeScrip
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/ticket-manager.git
+   git clone https://github.com/JorgeFi18/ticket-manager.git
    cd ticket-manager
    ```
 
