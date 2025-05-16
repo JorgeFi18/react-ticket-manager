@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, TextField, Button, Typography, Paper, IconButton } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import supabase from '../lib/supabase';
 
 export default function Login() {
