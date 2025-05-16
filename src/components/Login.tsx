@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, TextField, Button, Typography, Paper } from '@mui/material';
+import { Box, TextField, Button, Typography, Paper, IconButton } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import supabase from '../lib/supabase';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [viewPassword, setViewPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -40,13 +42,16 @@ export default function Login() {
 
                     <TextField
                         label="Contraseña"
-                        type="password"
+                        type={viewPassword ? "text" : "password"}
                         variant="outlined"
                         fullWidth
                         margin="normal"
                         required
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    <Button onClick={() => setViewPassword(!viewPassword)}>
+                        {viewPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                    </Button>
 
                     <Button
                         type="submit"
