@@ -38,6 +38,8 @@ export default function EventTickets() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState<string | null>(null);
   const [newTicket, setNewTicket] = useState({
     name: '',
     phone: '',
@@ -91,19 +93,33 @@ export default function EventTickets() {
     }
   };
 
-  const handleDeleteTicket = async (ticketId: string) => {
+  const handleDeleteClick = (ticketId: string) => {
+    setTicketToDelete(ticketId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!ticketToDelete) return;
+    
     try {
       const { error } = await supabase
         .from('tickets')
         .delete()
-        .eq('id', ticketId);
+        .eq('id', ticketToDelete);
 
       if (error) throw error;
 
-      setTickets(tickets.filter(t => t.id !== ticketId));
+      setTickets(tickets.filter(t => t.id !== ticketToDelete));
+      setDeleteDialogOpen(false);
+      setTicketToDelete(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error eliminando ticket');
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setTicketToDelete(null);
   };
 
   const checkTicket = async (ticketId: string) => {
@@ -150,10 +166,12 @@ export default function EventTickets() {
         <Table sx={{ minWidth: { xs: 300, sm: 650 } }} size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Nombre</TableCell>
+              {/* Show "Información" on mobile and "Nombre" on desktop */}
+              <TableCell sx={{ display: { xs: 'table-cell', sm: 'none' } }}>Información</TableCell>
+              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Nombre</TableCell>
               <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Teléfono</TableCell>
               <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Documento</TableCell>
-              <TableCell>Estado</TableCell>
+              <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Estado</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -162,10 +180,12 @@ export default function EventTickets() {
               <TableRow key={ticket.id}>
                 <TableCell sx={{ maxWidth: { xs: '120px' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {ticket.name}
+                  <Typography sx={{ display: { xs: 'block', sm: 'none' } }}>{ticket.phone}</Typography>
+                  <Typography sx={{ display: { xs: 'block', sm: 'none' } }} color={ticket.is_valid ? 'success.main' : 'warning.main'}>{ticket.is_valid ? 'Validado' : 'Pendiente'}</Typography>
                 </TableCell>
                 <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{ticket.phone}</TableCell>
                 <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{ticket.document || 'N/A'}</TableCell>
-                <TableCell>
+                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                   <Box sx={{
                     color: ticket.is_valid ? 'success.main' : 'warning.main',
                     fontWeight: 'bold'
@@ -174,30 +194,32 @@ export default function EventTickets() {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteTicket(ticket.id)}
-                    startIcon={<Delete fontSize="small" />}
-                  >
-                    Eliminar
-                  </Button>
-                  <Button
-                    size="small"
-                    color="success"
-                    onClick={() => checkTicket(ticket.id)}
-                    startIcon={<Visibility fontSize="small" />}
-                  >
-                    Ver
-                  </Button>
-                  <Button
-                    size="small"
-                    color="info"
-                    onClick={() => sendTicket(ticket)}
-                    startIcon={<Send fontSize="small" />}
-                  >
-                    Enviar
-                  </Button>
+                  <Box sx={{ display: 'flex', gap: 1, flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'flex-start' } }}>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleDeleteClick(ticket.id)}
+                      startIcon={<Delete fontSize="small" />}
+                    >
+                      Eliminar
+                    </Button>
+                    <Button
+                      size="small"
+                      color="success"
+                      onClick={() => checkTicket(ticket.id)}
+                      startIcon={<Visibility fontSize="small" />}
+                    >
+                      Ver
+                    </Button>
+                    <Button
+                      size="small"
+                      color="info"
+                      onClick={() => sendTicket(ticket)}
+                      startIcon={<Send fontSize="small" />}
+                    >
+                      Enviar
+                    </Button>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
@@ -251,6 +273,20 @@ export default function EventTickets() {
           >
             Crear Ticket
           </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro que deseas eliminar este ticket? Esta acción no se puede deshacer.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Eliminar
+          </Button>
+          <Button onClick={handleDeleteCancel}>Cancelar</Button>
         </DialogActions>
       </Dialog>
     </Box>
